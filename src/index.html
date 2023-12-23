@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spell Caster</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+    <script type="module" src="index.js"></script>
+    <link rel="stylesheet" href="index.scss" />
+  </head>
+  <body>
+    
+    <!-- 
+    
+      SPELL SHAPE DEFINITIONS
+    
+    -->
+
+    <svg id="spells" aria-hidden="true">
+
+
+      <refs>
+        <path
+          id="spell-shape-arcane"
+          data-spell="arcane"
+          class="spell"
+          d="M1 5L1 24.5L1 37L4 50.5L9.5 61.5L16.5 69.5L25.5 77L35.5 81.5L46 85L57 86L67.5 85L76.5 81.5L86.5 77L96 69.5L102.5 61.5L108 52.5L111 43.5L112 34L112.5 26L112.5 17.5L112.5 7.5L112.5 2L57.5 1L58.5 43.5"
+        />
+        <path
+          id="spell-shape-fire"
+          data-spell="fire"
+          class="spell"
+          d="M1.38133 71L38.7997 2L72.643 71L110.061 2L143.905 71"
+        />
+        <path
+          id="spell-shape-vortex"
+          data-spell="vortex"
+          class="spell"
+          d="M48.8852 110L47.4198 2L1 65.6158L85 65.6158L85 110"
+        />
+
+        <path id="check" d="M9.44172 20L0 10.5198L2.36043 8.14969L9.44172 15.2599L24.6396 0L27 2.37006L9.44172 20Z" fill="white"/>
+        
+      </refs>
+    </svg>
+
+    <!-- 
+    
+      GAME SCREENS
+    
+    -->
+
+    <div class="app">
+      
+      <!-- THREE JS DOES IT'S RENDERERING IN HERE -->
+      <div class="canvas"></div>
+
+      <!-- TOP STATUS BAR, FOR THINGS LIKE LIFE INDICATOR, SOUND CONTROLS AND OTHER QUICK OPTIONS -->
+      <div class="top-bar">
+        <div class="left">
+          <div class="health" id="health-bar" data-show-on="GAME_RUNNING,PAUSED,SPELL_OVERLAY">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="20" viewBox="0 0 22 20" fill="none">
+              <g clip-path="url(#clip0_203_249)">
+                <path d="M17.7218 0H4.2774C4.12462 0 3.97948 0.078125 3.89546 0.210938L0.0760111 5.96094C-0.0347528 6.13281 -0.0232945 6.35938 0.102747 6.51563L10.6444 19.8281C10.8277 20.0586 11.1715 20.0586 11.3548 19.8281L21.8965 6.51563C22.0225 6.35547 22.034 6.13281 21.9232 5.96094L18.1076 0.210938C18.0198 0.078125 17.8784 0 17.7218 0ZM16.9847 1.875L19.4024 5.625H16.7899L14.8152 1.875H16.9847ZM9.26559 1.875H12.7298L14.7045 5.625H7.29476L9.26559 1.875ZM5.01455 1.875H7.184L5.20934 5.625H2.59684L5.01455 1.875ZM3.37219 7.5H5.33539L7.94407 13.75L3.37219 7.5ZM7.3024 7.5H14.6968L10.9996 17.0039L7.3024 7.5ZM14.0552 13.75L16.66 7.5H18.6232L14.0552 13.75Z" fill="white"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_203_249">
+                  <rect width="22" height="20" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <div class="info health-bar">
+              <span class="sr-only"></span>
+            </div>
+          </div>
+          <div class="demons" id="demon-state" data-show-on="GAME_RUNNING,SPELL_OVERLAY">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M9.77778 11.7857C9.77778 12.2519 9.63441 12.7076 9.36581 13.0953C9.09722 13.4829 8.71545 13.785 8.26878 13.9634C7.82212 14.1418 7.33062 14.1885 6.85645 14.0976C6.38227 14.0066 5.94671 13.7821 5.60485 13.4525C5.26299 13.1228 5.03018 12.7028 4.93586 12.2456C4.84154 11.7883 4.88995 11.3144 5.07496 10.8837C5.25998 10.453 5.57329 10.0848 5.97527 9.82582C6.37726 9.56682 6.84987 9.42857 7.33333 9.42857C7.98164 9.42857 8.60339 9.67691 9.06182 10.119C9.52024 10.561 9.77778 11.1606 9.77778 11.7857ZM14.6667 9.42857C14.1832 9.42857 13.7106 9.56682 13.3086 9.82582C12.9066 10.0848 12.5933 10.453 12.4083 10.8837C12.2233 11.3144 12.1749 11.7883 12.2692 12.2456C12.3635 12.7028 12.5963 13.1228 12.9382 13.4525C13.28 13.7821 13.7156 14.0066 14.1898 14.0976C14.664 14.1885 15.1555 14.1418 15.6021 13.9634C16.0488 13.785 16.4305 13.4829 16.6991 13.0953C16.9677 12.7076 17.1111 12.2519 17.1111 11.7857C17.1111 11.1606 16.8536 10.561 16.3952 10.119C15.9367 9.67691 15.315 9.42857 14.6667 9.42857ZM22 10.2143C22 13.146 20.6708 15.8891 18.3333 17.8279V20.0357C18.3333 20.5567 18.1187 21.0563 17.7367 21.4247C17.3547 21.793 16.8366 22 16.2963 22H5.7037C5.16345 22 4.64532 21.793 4.2633 21.4247C3.88128 21.0563 3.66667 20.5567 3.66667 20.0357V17.8279C1.32407 15.8891 0 13.146 0 10.2143C0 4.5817 4.93472 0 11 0C17.0653 0 22 4.5817 22 10.2143ZM19.5556 10.2143C19.5556 5.88205 15.7178 2.35714 11 2.35714C6.28222 2.35714 2.44444 5.88205 2.44444 10.2143C2.44444 12.6019 3.60657 14.8304 5.63343 16.333C5.78206 16.4431 5.90245 16.5847 5.98528 16.7468C6.06811 16.909 6.11117 17.0873 6.11111 17.268V19.6429H7.74074V17.6786C7.74074 17.366 7.86951 17.0662 8.09872 16.8452C8.32793 16.6242 8.63881 16.5 8.96296 16.5C9.28712 16.5 9.59799 16.6242 9.8272 16.8452C10.0564 17.0662 10.1852 17.366 10.1852 17.6786V19.6429H11.8148V17.6786C11.8148 17.366 11.9436 17.0662 12.1728 16.8452C12.402 16.6242 12.7129 16.5 13.037 16.5C13.3612 16.5 13.6721 16.6242 13.9013 16.8452C14.1305 17.0662 14.2593 17.366 14.2593 17.6786V19.6429H15.8889V17.268C15.889 17.0875 15.9321 16.9093 16.0149 16.7474C16.0978 16.5854 16.2181 16.444 16.3666 16.334C18.3934 14.8304 19.5556 12.6019 19.5556 10.2143Z" fill="white"/>
+            </svg>
+            <span class="info">
+              <span class="sr-only">Demons killed:</span> <span class="count" data-demon-count>0</span> / <span class="count" data-demon-total>50</span> 
+            </span>
+          </div>
+          <div class="endless" id="endless-mode"  data-show-on="ENDLESS_MODE">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="42" height="20" viewBox="0 0 42 20" fill="none">
+              <path d="M42 10C42.0002 11.9777 41.4043 13.9111 40.2876 15.5557C39.171 17.2002 37.5837 18.4819 35.7265 19.2388C33.8693 19.9957 31.8257 20.1937 29.8542 19.8078C27.8826 19.4219 26.0717 18.4694 24.6504 17.0708L24.5674 16.9825L14.4283 5.71885C13.5711 4.89093 12.4844 4.33055 11.3047 4.10802C10.125 3.8855 8.90474 4.01075 7.79711 4.46806C6.68947 4.92536 5.74379 5.69435 5.07874 6.67851C4.41369 7.66268 4.05891 8.81818 4.05891 10C4.05891 11.1818 4.41369 12.3373 5.07874 13.3215C5.74379 14.3057 6.68947 15.0746 7.79711 15.5319C8.90474 15.9892 10.125 16.1145 11.3047 15.892C12.4844 15.6695 13.5711 15.1091 14.4283 14.2812L14.95 13.7012C15.1269 13.5043 15.3416 13.3435 15.5817 13.2282C15.8217 13.1128 16.0826 13.0451 16.3492 13.029C16.6159 13.0128 16.8832 13.0485 17.1359 13.1339C17.3885 13.2194 17.6216 13.353 17.8218 13.5271C18.022 13.7012 18.1854 13.9123 18.3026 14.1486C18.4199 14.3848 18.4887 14.6414 18.5051 14.9038C18.5215 15.1661 18.4853 15.4291 18.3984 15.6777C18.3115 15.9263 18.1758 16.1556 17.9988 16.3526L17.4314 16.9825L17.3484 17.0708C15.927 18.469 14.1162 19.4211 12.1448 19.8068C10.1735 20.1925 8.13019 19.9944 6.27328 19.2375C4.41636 18.4807 2.82925 17.1991 1.71262 15.5549C0.595995 13.9106 0 11.9775 0 10C0 8.0225 0.595995 6.0894 1.71262 4.44514C2.82925 2.80088 4.41636 1.51931 6.27328 0.762477C8.13019 0.00564237 10.1735 -0.192466 12.1448 0.193202C14.1162 0.578871 15.927 1.531 17.3484 2.92918L17.4314 3.01751L27.5705 14.2812C28.4277 15.1091 29.5143 15.6695 30.6941 15.892C31.8738 16.1145 33.094 15.9892 34.2017 15.5319C35.3093 15.0746 36.255 14.3057 36.92 13.3215C37.5851 12.3373 37.9399 11.1818 37.9399 10C37.9399 8.81818 37.5851 7.66268 36.92 6.67851C36.255 5.69435 35.3093 4.92536 34.2017 4.46806C33.094 4.01075 31.8738 3.8855 30.6941 4.10802C29.5143 4.33055 28.4277 4.89093 27.5705 5.71885L27.0488 6.29878C26.8719 6.49574 26.6572 6.65648 26.4171 6.77182C26.177 6.88717 25.9162 6.95486 25.6495 6.97103C25.3829 6.9872 25.1156 6.95154 24.8629 6.86607C24.6102 6.7806 24.3772 6.64701 24.177 6.47292C23.9768 6.29883 23.8134 6.08765 23.6962 5.85144C23.5789 5.61523 23.5101 5.35862 23.4937 5.09624C23.4772 4.83387 23.5135 4.57088 23.6004 4.3223C23.6872 4.07371 23.823 3.84439 24 3.64743L24.5674 3.01751L24.6504 2.92918C26.0717 1.53059 27.8826 0.578099 29.8542 0.192194C31.8257 -0.193711 33.8693 0.00430047 35.7265 0.761184C37.5837 1.51807 39.171 2.79982 40.2876 4.44434C41.4043 6.08885 42.0002 8.02225 42 10Z" fill="white"/>
+            </svg>
+            <span class="info">Endless Mode</span>
+          </div>
+          <div class="paused" id="paused" data-show-on="ENDLESS_PAUSE,PAUSED">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M14.4444 3.44444L12 1M12 1L9.55556 3.44444M12 1V23M12 23L14.4444 20.5556M12 23L9.55556 20.5556M20.5556 14.4444L23 12M23 12L20.5556 9.55556M23 12H1M1 12L3.44444 14.4444M1 12L3.44444 9.55556" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="info">Paused, drag to move around the scene</span>
+          </div>
+        </div>
+        <div class="right">
+
+          <button id="close-button" data-send="end" data-show-on="ENDLESS_MODE,ENDLESS_PAUSE">
+            <span class="sr-only">Back to the menu.</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z" fill="white"/>
+            </svg>
+          </button>
+          <button id="pause-button" data-send="pause" data-show-on="GAME_RUNNING,PAUSED,ENDLESS_MODE,ENDLESS_PAUSE">
+            <span class="sr-only">Pause the game.</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="14" viewBox="0 0 12 14" fill="none">
+              <path d="M8 14V0H12V14H8ZM0 14V0H4V14H0Z" fill="white"/>
+            </svg>  
+          </button>
+          <button id="sounds-button" class="show-unless" >
+            <span class="sr-only" data-copy="Turn sounds $$state."></span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="17" viewBox="0 0 18 17" fill="none">
+              <path d="M17.4776 0.522705V11.6023C17.4776 12.425 17.1508 13.2141 16.569 13.7959C15.9872 14.3777 15.1981 14.7045 14.3754 14.7045C13.5526 14.7045 12.7635 14.3777 12.1817 13.7959C11.5999 13.2141 11.2731 12.425 11.2731 11.6023C11.2731 10.7795 11.5999 9.9904 12.1817 9.40861C12.7635 8.82682 13.5526 8.49998 14.3754 8.49998C14.854 8.49998 15.306 8.60634 15.7049 8.80134V3.59839L6.84126 5.48634V13.375C6.84126 14.1978 6.51442 14.9868 5.93263 15.5686C5.35084 16.1504 4.56177 16.4773 3.73899 16.4773C2.91622 16.4773 2.12714 16.1504 1.54535 15.5686C0.963564 14.9868 0.636719 14.1978 0.636719 13.375C0.636719 12.5522 0.963564 11.7631 1.54535 11.1813C2.12714 10.5996 2.91622 10.2727 3.73899 10.2727C4.21763 10.2727 4.66967 10.3791 5.06854 10.5741V3.1818L17.4776 0.522705Z" fill="white"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT THAT SITS OVER THE GAME -->
+      <div class="screens">
+
+        <!-- SPELLS -->
+        <div class="spells" data-send="spells">
+
+            <div class="background" data-flip-spell></div>
+         
+            <div class="spell-details">
+              <div class="spell-path" id="spell-svg-viz-arcane" >
+                <svg class="check" xmlns="http://www.w3.org/2000/svg" width="27" height="20" viewBox="0 0 27 20" fill="none">
+                  <use href="#check" />
+                </svg> 
+                <svg data-flip-spell xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129 98" fill="none">
+                  <path class="guide-path" d="M5 5V76C5 87.0457 13.9543 96 25 96H107C118.046 96 127 87.0457 127 76V25C127 13.9543 118.046 5 107 5H83.0416C71.9959 5 63.0416 13.9543 63.0416 25V53.6304" stroke-width="4"/>
+                  <path id="spell-path-viz-arcane" class="charge-path" d="M5 5V76C5 87.0457 13.9543 96 25 96H107C118.046 96 127 87.0457 127 76V25C127 13.9543 118.046 5 107 5H83.0416C71.9959 5 63.0416 13.9543 63.0416 25V53.6304" stroke="#9BCFFF"/>
+                  <circle cx="5" cy="5" r="5" fill="#9BCFFF"/>
+                  <path d="M54 44L63 56.5L71.5 44" stroke="#9BCFFF" stroke-width="4"/>
+                </svg>
+              </div>
+              <div class="info">
+                <h4 data-flip-spell>Arcane</h4>
+                <p data-flip-spell>The reliable Arcane spell shots a powerful bolt of magic, killing one demon. It has a fast recharge.</p>
+              </div>
+            </div>
+            
+            <div class="spell-details">
+              <div class="spell-path" id="spell-svg-viz-fire">
+                <svg class="check" xmlns="http://www.w3.org/2000/svg" width="27" height="20" viewBox="0 0 27 20" fill="none">
+                  <use href="#check" />
+                </svg> 
+                <svg  data-flip-spell xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 120" fill="none">
+                  <path class="guide-path" d="M5 93.4113L17.9176 55.9579C23.6054 39.4668 47.2737 40.5189 51.4757 57.4497V57.4497C55.7764 74.778 80.2103 75.318 85.2723 58.1966L86.0675 55.507C91.1314 38.379 115.23 37.9355 120.92 54.8656L138 105.677" stroke-width="4"/>
+                  <path id="spell-path-viz-fire" class="charge-path" d="M5 93.4113L17.9176 55.9579C23.6054 39.4668 47.2737 40.5189 51.4757 57.4497V57.4497C55.7764 74.778 80.2103 75.318 85.2723 58.1966L86.0675 55.507C91.1314 38.379 115.23 37.9355 120.92 54.8656L138 105.677" stroke="#F2C092" />
+                  <circle cx="5" cy="93" r="5" fill="#F2C092"/>
+                  <path d="M126.359 99.4829L139.186 108.011L142.738 93.3183" stroke="#F2C092" stroke-width="4"/>
+                </svg>
+              </div>
+              <div class="info">
+                <h4 data-flip-spell>Fire</h4>
+                <p data-flip-spell>The Fire spell releases two fireballs, kills two unsuspected demon!</p>
+              </div>
+            </div>
+            
+            <div class="spell-details">
+              <div class="spell-path" id="spell-svg-viz-vortex">
+                <svg class="check" xmlns="http://www.w3.org/2000/svg" width="27" height="20" viewBox="0 0 27 20" fill="none">
+                  <use href="#check" />
+                </svg> 
+                <svg data-flip-spell xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 170" fill="none">
+                  <path class="guide-path" d="M75 166V61.7475C75 42.3543 50.1681 34.3112 38.798 50.0217L22.9608 71.9046C13.3899 85.129 22.8384 103.63 39.1628 103.63H78H105C116.046 103.63 125 112.585 125 123.63V166" stroke-width="4"/>
+                  <path id="spell-path-viz-vortex" class="charge-path" d="M75 166V61.7475C75 42.3543 50.1681 34.3112 38.798 50.0217L22.9608 71.9046C13.3899 85.129 22.8384 103.63 39.1628 103.63H78H105C116.046 103.63 125 112.585 125 123.63V166" stroke="#C5F298"/>
+                  <circle cx="75" cy="165" r="5" fill="#C5F298"/>
+                  <path d="M116 154L125 166.5L133.5 154" stroke="#C5F298" stroke-width="4"/>
+                </svg>
+              </div>
+              <div class="info">
+                <h4 data-flip-spell>Vortex</h4>
+                <p data-flip-spell>Opens a vortex that sucks in all the demons in the room. This one takes a while to charge so choose when to use it wisely!</p>
+              </div>
+            </div>
+             
+          
+         
+        </div>
+
+        
+
+        <div data-screen="LOADING" class="loading">
+          <div class="content">
+            <span>Loading...</span>
+            <div class="loading-bar"></div>
+          </div>
+        </div>
+
+        <div data-screen="LOAD_ERROR" class="load-error">
+          <div class="content">
+            <span >Load Error</span>
+          </div >
+        </div>
+
+        <div data-screen="TITLE_SCREEN" class="title">
+          <div class="content">
+            <h1 data-fade>Spell<br/>Caster</h1>
+            <button data-send="next" data-fade>Start</button>
+            <ul class="button-row">
+              <li><button data-fade class="simple" data-send="skip">Skip instructions</button></li>
+              <li><button data-fade class="simple" data-send="endless">Endless mode</button></li>
+              <li><button data-fade class="simple" data-send="credits">Credits</button></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div data-screen="CREDITS" >
+          <div class="content">
+            <h3 data-fade>Credits</h3>
+            
+            <ul>
+              <li data-fade>Game code: <a href="https://twitter.com/steeevg" target="_blank">Steve Gardner</a></li>
+              <li data-fade>Room model: <a href="https://quaternius.com/packs/ultimatemodularruins.html" target="_blank">Modular Ruins Pack</a> by <a href="https://quaternius.com/" target="_blank">Quaternius</a> </li>
+              <li data-fade><a href="https://poly.pizza/m/3b3VmmxXZ7S" target="_blank" >Skeletal Hand</a>: by <a href="https://poly.pizza/u/Jeremy%20Swan" target="_blank">Jeremy Swan</a> </li>
+              <li data-fade>Demon: An edited version of <a href="https://poly.pizza/m/Q0ZWVssZCg" target="_blank">Skeleton Boy</a> by <a href="https://poly.pizza/u/Polygonal%20Mind" target="_blank">Polygonal Mind</a></li>
+              <li data-fade>Sound from <a href="https://zapsplat.com" target="_blank">Zapsplat.com</a></li>
+            </ul>
+
+            <button data-fade data-send="close">Back</button>
+          </div>
+        </div>
+        
+        <div data-screen="INSTRUCTIONS_CRYSTAL" class="instructions-crystal">
+          <div class="content">
+            <h3 data-fade>Protect the crystal</h3>
+            <p data-fade>Welcome, Guardian. Your mission is clear: safeguard this  crystal. Demons seek to destroy it, for if they succeed, the consequences will be catastrophic.</p>
+            <button data-fade data-send="next">Next</button>
+          </div>
+        </div>
+
+        <div data-screen="INSTRUCTIONS_DEMON" class="instructions-demon">
+          <div class="content">
+            <h3 data-fade>Face the onslaught</h3>
+            <p data-fade>A horde of <span data-demon-total>50</span> demons approaches, relentless in their quest to seize the crystal's power. Stand resolute, for you alone are its defender. Ready your spells and prepare to face the coming onslaught.</p>
+            <button data-send="next" data-fade>Next</button>
+          </div>
+        </div>
+
+        <div data-screen="INSTRUCTIONS_CAST" class="instructions-cast">
+          <div class="content">
+            <svg id="spell-guide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 505 385" fill="none">
+              <g filter="url(#filter0_d_200_49)">
+                <path d="M20.3333 47C20.3333 61.7276 32.2724 73.6667 47 73.6667C61.7276 73.6667 73.6667 61.7276 73.6667 47C73.6667 32.2724 61.7276 20.3333 47 20.3333C32.2724 20.3333 20.3333 32.2724 20.3333 47ZM249.464 217.536C251.417 219.488 254.583 219.488 256.536 217.536L288.355 185.716C290.308 183.763 290.308 180.597 288.355 178.645C286.403 176.692 283.237 176.692 281.284 178.645L253 206.929L224.716 178.645C222.763 176.692 219.597 176.692 217.645 178.645C215.692 180.597 215.692 183.763 217.645 185.716L249.464 217.536ZM42 47V339.5H52V47H42ZM67 364.5H460V354.5H67V364.5ZM485 339.5V67H475V339.5H485ZM460 42H273V52H460V42ZM248 67V214H258V67H248ZM273 42C259.193 42 248 53.1929 248 67H258C258 58.7157 264.716 52 273 52V42ZM485 67C485 53.1929 473.807 42 460 42V52C468.284 52 475 58.7157 475 67H485ZM460 364.5C473.807 364.5 485 353.307 485 339.5H475C475 347.784 468.284 354.5 460 354.5V364.5ZM42 339.5C42 353.307 53.1929 364.5 67 364.5V354.5C58.7157 354.5 52 347.784 52 339.5H42Z" fill="white"/>
+              </g>
+              <defs>
+                <filter id="filter0_d_200_49" x="0.333008" y="0.333313" width="504.667" height="384.167" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                  <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                  <feOffset/>
+                  <feGaussianBlur stdDeviation="10"/>
+                  <feComposite in2="hardAlpha" operator="out"/>
+                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_200_49"/>
+                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_200_49" result="shape"/>
+                </filter>
+              </defs>
+            </svg>
+            <p data-fade>Drawing upon ancient magic, you can protect the crystal by casting spells in the air. Try drawing this shape to destroy the demon. </p>
+          </div>
+        </div>
+
+        <div data-screen="INSTRUCTIONS_SPELLS" class="instructions-spells">
+          <div class="content">
+            <p data-fade>You possess three potent spells: Arcane, Fire, and Vortex. Each wields unique power, but beware, they take time to recharge.</p>
+            <p data-fade>Now, stand tall and protect the crystal. The fate of our world rests in your hands.</p>
+            <button data-fade data-send="next">Start</button>
+          </div>
+        </div>
+
+        <div data-screen="PAUSED" class="paused">
+          <div class="content">
+            <button data-fade data-send="resume">Resume</button>
+            <button data-fade class="simple" data-send="end">Back to menu</button>
+          </div>
+        </div>
+
+        <div data-screen="SPELL_OVERLAY" class="spell-overlay">
+          <div class="content">
+            <button data-fade data-send="close">Close</button>
+          </div>
+        </div>
+
+        <div data-screen="GAME_OVER" class="game-over">
+          <div class="content">
+            <h2 data-fade data-split>Game Over</h2>
+            <button data-fade data-send="restart">Try again</button>
+            <ul class="button-row">
+              <li><button data-fade class="simple" data-send="instructions">Instructions</button></li>
+              <li><button data-fade class="simple" data-send="endless">Endless mode</button></li>
+              <li><button data-fade class="simple" data-send="credits">Credits</button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div data-screen="WINNER" class="winner">
+          <div class="content">
+            
+            <h2 data-fade>You did it!</h2>
+            <button data-fade data-send="restart">Play again</button>
+            <ul class="button-row">
+              <li><button data-fade class="simple" data-send="instructions">Instructions</button></li>
+              <li><button data-fade class="simple" data-send="endless">Endless mode</button></li>
+              <li><button data-fade class="simple" data-send="credits">Credits</button></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="charging-notification">
+      <p>The <span class="charging-spell">Spell Name</span> spell is still charging.</p>
+    </div>
+
+    <!-- 
+    
+    DEBUG SCREENS AND OVERLAYS. 
+    THESE ONLY SHOW IF THEY ARE ENABLED IN JS 
+    
+    -->
+
+    <div class="debug-overlays">
+      <svg class="overlay" id="spell-helper" style="display: none">
+        <path id="spell-path" />
+        <g id="spell-points"></g>
+      </svg>
+    </div>
+
+    <div class="debug-panels">
+      <div id="fps" class="panel"  style="display: none"></div>
+      
+      <div id="health-states" class="panel" style="display: none">
+        <div class="health-bar"></div>
+      </div>
+
+      <div id="app-state" class="panel" style="display: none">
+        <div class="state"></div>
+        <div class="controls"></div>
+      </div>
+
+
+      <div id="endless-mode" class="panel"  style="display: none">
+        <p>Endless Mode</p>
+      </div>
+
+      <div class="panel" id="spell-stats" style="display: none">
+        <div class="spell-stat" data-spell-shape="spell-shape-arcane">
+          <h2>Arcane</h2>
+          <div>
+            <svg class="spell-preview" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 113 86" fill="none">
+              <use href="#spell-shape-arcane" />
+            </svg>
+            <div class="score">0</div>
+          </div>
+        </div>
+        <div class="spell-stat" data-spell-shape="spell-shape-fire">
+          <h2>Fire</h2>
+          <div>
+            <svg class="spell-preview" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 145 73" fill="none">
+              <use href="#spell-shape-fire" />
+            </svg>
+            <div class="score">0</div>
+          </div>
+        </div>
+        <div class="spell-stat" data-spell-shape="spell-shape-vortex">
+          <h2>Vortex</h2>
+          <div>
+            <svg class="spell-preview" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86 111" fill="none">
+              <use href="#spell-shape-vortex" />
+            </svg>
+            <div class="score">0</div>
+          </div>
+        </div>
+        
+          
+        
+      
+    </div>
+  </body>
+</html>

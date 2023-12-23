@@ -1,0 +1,31 @@
+{
+  "name": "spell-caster",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ste-vg/spell-caster.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ste-vg/spell-caster/issues"
+  },
+  "homepage": "https://github.com/ste-vg/spell-caster#readme",
+  "dependencies": {
+    "gsap": "^3.11.3",
+    "simplex-noise": "^4.0.1",
+    "three": "^0.152.0",
+    "xstate": "^4.33.6"
+  },
+  "devDependencies": {
+    "@parcel/transformer-glsl": "^2.7.0",
+    "@parcel/transformer-sass": "^2.7.0",
+    "parcel": "^2.7.0"
+  }
+}
